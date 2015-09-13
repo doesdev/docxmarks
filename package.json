@@ -8,6 +8,7 @@
   },
   "author": "Andrew Carpenter",
   "license": "MIT",
+  "devDependencies": {},
   "dependencies": {
     "jszip": "^2.5.0"
   }
