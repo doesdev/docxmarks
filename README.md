@@ -16,7 +16,7 @@ options then you should be using
 
 Basic Example (overwrites the source document)
 ```javascript
-var DocxMarks = require('./../index')
+var DocxMarks = require('docxmarks')
 var docx = 'path/to/document.docx'
 
 var docxMarks = new DocxMarks(testDocxIn)
@@ -36,7 +36,7 @@ docxMarks
 
 Advanced Example (save to new file, update multiple bookmarks, use callback)
 ```javascript
-var DocxMarks = require('./../index')
+var DocxMarks = require('docxmarks')
 var docx = 'path/to/document.docx'
 var docxOut = 'path/to/document_out.docx'
 
