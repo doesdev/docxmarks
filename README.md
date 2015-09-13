@@ -10,7 +10,7 @@ This library will also only handle text, nothing else.
 
 I say all of that to say if you need more advanced formatting and content
 options then you should be using
-(docxtemplater)[https://github.com/open-xml-templating/docxtemplater].
+[docxtemplater](https://github.com/open-xml-templating/docxtemplater).
 
 ## usage
 
@@ -31,7 +31,7 @@ docxMarks
     docxMarks.update('BOOKMARK_NAME', 'Text to set bookmark to')
   })
   .on('updated', function () { return console.log('successfully updated') })
-  
+
 ```
 
 Advanced Example (save to new file, update multiple bookmarks, use callback)
