@@ -1,0 +1,14 @@
+{
+  "name": "docxmarks",
+  "version": "1.0.0",
+  "description": "Super simple bookmark replacement / mail merge for docx files",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Andrew Carpenter",
+  "license": "MIT",
+  "dependencies": {
+    "jszip": "^2.5.0"
+  }
+}
