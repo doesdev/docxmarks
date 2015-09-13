@@ -1,4 +1,4 @@
-# docxmarks
+# docxmarks   [![npm version](https://badge.fury.io/js/docxmarks.svg)](http://badge.fury.io/js/docxmarks)
 
 Replace text in native bookmarks in Open XML Document Files (.docx).
 
@@ -11,6 +11,9 @@ This library will also only handle text, nothing else.
 I say all of that to say if you need more advanced formatting and content
 options then you should be using
 [docxtemplater](https://github.com/open-xml-templating/docxtemplater).
+
+## install
+`npm i docxmarks --save`
 
 ## usage
 
