@@ -2,9 +2,30 @@
   "name": "docxmarks",
   "version": "1.0.0",
   "description": "Super simple bookmark replacement / mail merge for docx files",
+  "keywords": [
+    "docx",
+    "mail merge",
+    "bookmark",
+    "bookmarks",
+    "word",
+    "microsoft word",
+    "libre office",
+    "open office"
+  ],
+  "files": ["index.js", "lib"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/musocrat/docxmarks"
+  },
+  "homepage": "https://github.com/musocrat/docxmarks",
+  "author": "Andrew Carpenter <andrew@musocrat.com> (https://github.com/musocrat)",
+  "bugs": {
+    "email": "andrew@musocrat.com",
+    "url": "https://github.com/musocrat/docxmarks/issues"
+  },
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "test/test.js"
   },
   "author": "Andrew Carpenter",
   "license": "MIT",
