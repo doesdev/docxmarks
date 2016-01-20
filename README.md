@@ -22,7 +22,7 @@ Basic Example (overwrites the source document)
 var DocxMarks = require('docxmarks')
 var docx = 'path/to/document.docx'
 
-var docxMarks = new DocxMarks(testDocxIn)
+var docxMarks = new DocxMarks(docx)
 
 docxMarks
   .on('error', function (error) { return console.log(error.stack) })
@@ -43,7 +43,7 @@ var DocxMarks = require('docxmarks')
 var docx = 'path/to/document.docx'
 var docxOut = 'path/to/document_out.docx'
 
-var docxMarks = new DocxMarks(testDocxIn)
+var docxMarks = new DocxMarks(docx)
 
 docxMarks
   .on('error', function (error) { return console.log(error.stack) })
