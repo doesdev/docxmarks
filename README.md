@@ -1,4 +1,4 @@
-# docxmarks   [![npm version](https://badge.fury.io/js/docxmarks.svg)](http://badge.fury.io/js/docxmarks)   [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](https://github.com/feross/standard)   [![Dependency Status](https://dependencyci.com/github/doesdev/docxmarks/badge)](https://dependencyci.com/github/doesdev/docxmarks) 
+# docxmarks   [![npm version](https://badge.fury.io/js/docxmarks.svg)](http://badge.fury.io/js/docxmarks)   [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](https://github.com/feross/standard)   [![Dependency Status](https://dependencyci.com/github/doesdev/docxmarks/badge)](https://dependencyci.com/github/doesdev/docxmarks)
 
 Replace text in native bookmarks in Open XML Document Files (.docx).
 
@@ -12,14 +12,14 @@ I say all of that to say if you need more advanced formatting and content
 options then you should be using
 [docxtemplater](https://github.com/open-xml-templating/docxtemplater).
 
-## install
+## Install
 `npm i docxmarks --save`
 
-## usage
+## Usage
 
 Basic Example (overwrites the source document)
 ```javascript
-var DocxMarks = require('docxmarks')
+const docxmarks = require('docxmarks')
 var docx = 'path/to/document.docx'
 
 var docxMarks = new DocxMarks(docx)

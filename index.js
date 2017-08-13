@@ -4,10 +4,22 @@
 const jszip = require('jszip')
 const matcher = /<w:bookmarkStart.+?(?:(?:(?:w:id="(.+?)").+?(?:w:name="(.+?)"))|(?:(?:w:name="(.+?)").+?(?:w:id="(.+?)"))).+?<w:bookmarkEnd.+?\/>/g
 const defTags = '<w:r><w:t></w:t></w:r>'
+const getType = (o) => {
+  if (typeof o === 'string') return 'base64'
+  if (typeof Buffer === 'function' && o instanceof Buffer) return 'nodebuffer'
+  if (typeof Uint8Array === 'function' && o instanceof Uint8Array) {
+    return 'uint8array'
+  }
+  if (typeof ArrayBuffer === 'function' && o instanceof ArrayBuffer) {
+    return 'arraybuffer'
+  }
+  return 'blob'
+}
 
 // main
-module.exports = async (base64, marks) => {
-  let zip = await jszip.loadAsync(Buffer.from(base64, 'base64'))
+module.exports = async (docx, marks) => {
+  let type = getType(docx)
+  let zip = await jszip.loadAsync(docx, {base64: type === 'base64'})
   let files = Object.keys(zip.files).filter((k) => k.match(/^word\/.+\.xml$/))
   for (let f of files) {
     let text = await zip.file(f).async('string')
@@ -26,5 +38,5 @@ module.exports = async (base64, marks) => {
     })
     zip.file(f, text)
   }
-  return await zip.generateAsync({type: 'base64'})
+  return await zip.generateAsync({type})
 }

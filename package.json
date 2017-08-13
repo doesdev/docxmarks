@@ -4,12 +4,15 @@
   "description": "Super simple bookmark replacement / mail merge for docx files",
   "keywords": [
     "docx",
+    "ooxml",
     "mail merge",
+    "replace",
     "bookmark",
     "bookmarks",
     "word",
     "microsoft word",
     "libre office",
+    "libre writer",
     "open office"
   ],
   "files": [
