@@ -25,6 +25,7 @@ const getReplacer = (marks) => {
     if (!marks[name]) return match
     let wrap = (match.match(/(<w:r[> ].+<\/w:r>)/) || [])[0] || defTags
     let [raw, val] = (wrap.match(/<w:t(?:>|\s.+?>)(.*)<\/w:t>/) || []) || []
+    raw = raw || '<w:t></w:t>'
     val = !val ? '' : val.replace(/<.+?>/g, '')
     val = (typeof marks[name] === 'function') ? marks[name](val) : marks[name]
     let start = `<w:bookmarkStart w:id="${id}" w:name="${name}"/>`
