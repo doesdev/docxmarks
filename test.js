@@ -3,8 +3,8 @@
 import test from 'ava'
 import fs from 'fs'
 import path from 'path'
-import docxmarks from './../index'
-const docx = fs.readFileSync(path.resolve(__dirname, 'assets', 'test.docx'))
+import docxmarks from './index'
+const docx = fs.readFileSync(path.resolve(__dirname, 'test.docx'))
 
 test(`bookmark replace works with Buffer`, async (assert) => {
   let oldLast
