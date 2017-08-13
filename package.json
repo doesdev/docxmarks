@@ -1,6 +1,9 @@
 {
   "name": "docxmarks",
   "version": "2.0.0-beta",
+  "engines": {
+    "node": ">=6.0.0"
+  },
   "description": "Super simple bookmark replacement / mail merge for docx files",
   "keywords": [
     "docx",
