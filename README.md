@@ -22,8 +22,12 @@ const docxmarks = require('docxmarks')
 const fs = require('fs')
 const docx = fs.readFileSync('path/to/document.docx')
 
-const replaceLast = (val) => val === 'Smith' ? 'Carpenter' : val
-docxmarks(docx, {first: 'Andrew', last: replaceLast}).then((data) => {
+const replacements = {
+  first: 'Andrew',
+  last: (val) => val || 'Carpenter',
+  maybeNoBookmark: {append: true, setter: 'There is one now'}
+}
+docxmarks(docx, replacements).then((data) => {
   fs.writeFileSync('path/to/newDocument.docx', data)
 })
 ```
@@ -37,7 +41,13 @@ docxmarks(docx, {first: 'Andrew', last: replaceLast}).then((data) => {
 - **docxData** *[base64 | Buffer | ArrayBuffer | Uint8Array - required]*
 - **replacements** *[object - required]*
   - **key** - Name of bookmark to replace, is case sensitive
-  - **value** *[string | function]* Value to replace bookmark with. If a function is supplied it will receive the text value currently in the bookmark and will use the function's return value as the replacement string.
+  - **value** *[string | function | object]* - Bookmark replacement value
+    - **string** - Replace bookmark with string's value
+    - **function** - Receives current text of bookmark, bookmark set with return value
+    - **object** - {`*setter`, `*append`}
+      - **setter** *[string | function - required]* same as string / function above
+      - **append** *[boolean - optional - false]* if bookmark not found append to document
+
 
 ## Upgrading
 
