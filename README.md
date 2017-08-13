@@ -17,45 +17,34 @@ options then you should be using
 
 ## Usage
 
-Basic Example (overwrites the source document)
 ```javascript
 const docxmarks = require('docxmarks')
-var docx = 'path/to/document.docx'
+const fs = require('fs')
+const docx = fs.readFileSync('path/to/document.docx')
 
-var docxMarks = new DocxMarks(docx)
-
-docxMarks
-  .on('error', function (error) { return console.log(error.stack) })
-  .on('ready', function () {
-    // docxMarks.update() - where the magic happens
-    // Param 1 (bookmark_name OR object)
-    // Param 2 (bookmark_text OR output_path if using object)
-    // Param 3 (output path if not using object)
-    docxMarks.update('BOOKMARK_NAME', 'Text to set bookmark to')
-  })
-  .on('updated', function () { return console.log('successfully updated') })
-
+const replaceLast = (val) => val === 'Smith' ? 'Carpenter' : val
+docxmarks(docx, {first: 'Andrew', last: replaceLast}).then((data) => {
+  fs.writeFileSync('path/to/newDocument.docx', data)
+})
 ```
 
-Advanced Example (save to new file, update multiple bookmarks, use callback)
-```javascript
-var DocxMarks = require('docxmarks')
-var docx = 'path/to/document.docx'
-var docxOut = 'path/to/document_out.docx'
+## API
 
-var docxMarks = new DocxMarks(docx)
+#### Takes docx data, replaces bookmarks, returns `Promise` resolving with new docx data in the same encoding as provided in input.
 
-docxMarks
-  .on('error', function (error) { return console.log(error.stack) })
-  .on('ready', function () {
-    // Use object to set {bookmark_name: value} for multiple bookmarks
-    docxMarks.update({
-      // Set value with callback which gets the original content as param
-      'FIRST_NAME': function (v) { return v + ' is his first name' },
-      'LAST_NAME': 'Carpenter'
-    // Pass output path as last param to output to that file
-    }, docxOut)
-  })
-  .on('updated', function () { return console.log('successfully updated') })
+#### `docxmarks(*docxData, *replacements)`
 
-```
+- **docxData** *[base64 | Buffer | ArrayBuffer | Uint8Array - required]*
+- **replacements** *[object - required]*
+  - **key** - Name of bookmark to replace, is case sensitive
+  - **value** *[string | function]* Value to replace bookmark with. If a function is supplied it will receive the text value currently in the bookmark and will use the function's return value as the replacement string.
+
+## Upgrading
+
+Version 2.0.0 is a complete re-write with 100% different API. Use new API if
+upgrading from an old version, as there is no transitional API.
+
+
+## License
+
+MIT © [Andrew Carpenter](https://github.com/doesdev)
