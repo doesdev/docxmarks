@@ -96,3 +96,15 @@ test(`bookmark replace works with base64`, async (assert) => {
   assert.is(oldLast, newLast)
   assert.true(typeof finalDx === 'string')
 })
+
+test(`appends bookmark if not found and append enabled`, async (assert) => {
+  let oldLast
+  let newLast = `It's there now`
+  let setOld = (last) => {
+    oldLast = last
+    return newLast
+  }
+  let newDx = await docxmarks(docx, {MIA: {setter: newLast, append: true}})
+  await docxmarks(newDx, {MIA: setOld})
+  assert.is(oldLast, newLast)
+})
