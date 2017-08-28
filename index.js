@@ -2,7 +2,7 @@
 
 // setup
 const jszip = require('jszip')
-const matcher = /<w:bookmarkStart.+?(?:(?:(?:w:id="(.+?)").+?(?:w:name="(.+?)"))|(?:(?:w:name="(.+?)").+?(?:w:id="(.+?)"))).+?<w:bookmarkEnd.+?\/>/g
+const matcher = /<w:bookmarkStart.+?(?:(?:(?:w:id="(.+?)").+?(?:w:name="(.+?)"))|(?:(?:w:name="(.+?)").+?(?:w:id="(.+?)"))).+?<w:bookmarkEnd.+?(?:w:id="(\1|\4)").+?>/g
 const defTags = '<w:r><w:t></w:t></w:r>'
 
 // helpers
@@ -57,6 +57,13 @@ module.exports = (docx, marks) => {
     let files = Object.keys(zip.files).filter((k) => k.match(/^word\/.+\.xml$/))
     let replace = (f) => {
       return zip.file(f).async('string').then((text) => {
+        let ogTmp
+        let tmp = (text.match(matcher) || [])[0]
+        while (tmp && (tmp = (tmp.substr(1).match(matcher) || [])[0])) {
+          ogTmp = tmp
+          tmp = tmp.replace(matcher, replacer)
+          text = text.replace(ogTmp, tmp)
+        }
         text = text.replace(matcher, replacer)
         zip.file(f, text)
         return Promise.resolve()

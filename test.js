@@ -1,10 +1,10 @@
 'use strict'
 
 import test from 'ava'
-import fs from 'fs'
-import path from 'path'
 import docxmarks from './index'
-const docx = fs.readFileSync(path.resolve(__dirname, 'test.docx'))
+const b64 = require('./docx.json')
+const docxDefault = Buffer.from(b64.default, 'base64')
+const docxNested = Buffer.from(b64.nested, 'base64')
 
 test(`test a bunch of bookmarks`, async (assert) => {
   let old = {
@@ -35,7 +35,7 @@ test(`test a bunch of bookmarks`, async (assert) => {
       return replacements[k]
     }
   })
-  let newDx = await docxmarks(docx, updaters)
+  let newDx = await docxmarks(docxDefault, updaters)
   Object.keys(old).forEach((k) => assert.is(updated[k], old[k]))
   await docxmarks(newDx, updaters)
   Object.keys(old).forEach((k) => assert.is(updated[k], replacements[k]))
@@ -48,7 +48,7 @@ test(`bookmark replace works with Buffer`, async (assert) => {
     oldLast = last
     return newLast
   }
-  let newDx = await docxmarks(docx, {LAST: setOld})
+  let newDx = await docxmarks(docxDefault, {LAST: setOld})
   assert.is(oldLast, 'Doe')
   let finalDx = await docxmarks(newDx, {LAST: setOld})
   assert.is(oldLast, newLast)
@@ -62,7 +62,7 @@ test(`bookmark replace works with ArrayBuffer`, async (assert) => {
     oldLast = last
     return newLast
   }
-  let newDx = await docxmarks(docx.buffer, {LAST: setOld})
+  let newDx = await docxmarks(docxDefault.buffer, {LAST: setOld})
   assert.is(oldLast, 'Doe')
   let finalDx = await docxmarks(newDx, {LAST: setOld})
   assert.is(oldLast, newLast)
@@ -76,7 +76,7 @@ test(`bookmark replace works with Uint8Array`, async (assert) => {
     oldLast = last
     return newLast
   }
-  let newDx = await docxmarks(new Uint8Array(docx.buffer), {LAST: setOld})
+  let newDx = await docxmarks(new Uint8Array(docxDefault.buffer), {LAST: setOld})
   assert.is(oldLast, 'Doe')
   let finalDx = await docxmarks(newDx, {LAST: setOld})
   assert.is(oldLast, newLast)
@@ -90,7 +90,7 @@ test(`bookmark replace works with base64`, async (assert) => {
     oldLast = last
     return newLast
   }
-  let newDx = await docxmarks(docx.toString('base64'), {LAST: setOld})
+  let newDx = await docxmarks(docxDefault.toString('base64'), {LAST: setOld})
   assert.is(oldLast, 'Doe')
   let finalDx = await docxmarks(newDx, {LAST: setOld})
   assert.is(oldLast, newLast)
@@ -104,7 +104,20 @@ test(`appends bookmark if not found and append enabled`, async (assert) => {
     oldLast = last
     return newLast
   }
-  let newDx = await docxmarks(docx, {MIA: {setter: newLast, append: true}})
+  let newDx = await docxmarks(docxDefault, {MIA: {setter: newLast, append: true}})
   await docxmarks(newDx, {MIA: setOld})
   assert.is(oldLast, newLast)
+})
+
+test(`handles nested bookmarks`, async (assert) => {
+  let oldInner
+  let newInner = 'newinner'
+  let setOld = (last) => {
+    oldInner = last
+    return newInner
+  }
+  let newDx = await docxmarks(docxNested, {inner: setOld})
+  assert.is(oldInner, 'test')
+  await docxmarks(newDx, {inner: setOld, outer: 'replace outer and inner'})
+  assert.is(oldInner, newInner)
 })
