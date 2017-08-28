@@ -24,11 +24,15 @@ const getReplacer = (marks, found, ids) => {
     name = name || name2
     found[name] = true
     ids.push(id)
-    if (!marks[name]) return match
+    if (!marks._dxmGetter && !marks[name]) return match
     let wrap = (match.match(/(<w:r[> ].+<\/w:r>)/) || [])[0] || defTags
     let [raw, val] = (wrap.match(/<w:t(?:>|\s.+?>)(.*)<\/w:t>/) || []) || []
     raw = raw || '<w:t></w:t>'
     val = !val ? '' : val.replace(/<.+?>/g, '')
+    if (marks._dxmGetter) {
+      marks._dxmGetter(name, val)
+      return match
+    }
     val = marks[name].setter(val)
     let start = `<w:bookmarkStart w:id="${id}" w:name="${name}"/>`
     let content = `<w:t xml:space="preserve">${val}</w:t>`
@@ -40,7 +44,10 @@ const getReplacer = (marks, found, ids) => {
 // main
 module.exports = (docx, marks) => {
   let append
+  let bookmarks = {}
+  if (!marks) marks = {_dxmGetter: (k, v) => { bookmarks[k] = v }}
   Object.entries(marks).forEach(([k, v]) => {
+    if (k === '_dxmGetter') return
     if (typeof v === 'string') marks[k] = {setter: () => v}
     else if (typeof v === 'function') marks[k] = {setter: v}
     else if (v.hasOwnProperty('setter') && typeof v.setter === 'string') {
@@ -70,6 +77,7 @@ module.exports = (docx, marks) => {
       })
     }
     let finish = () => {
+      if (marks._dxmGetter) return Promise.resolve(bookmarks)
       if (!append) return zip.generateAsync({type})
       let doc = 'word/document.xml'
       return zip.file(doc).async('string').then((text) => {

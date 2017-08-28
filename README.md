@@ -36,10 +36,12 @@ docxmarks(docx, replacements).then((data) => {
 
 #### Takes docx data, replaces bookmarks, returns `Promise` resolving with new docx data in the same encoding as provided in input.
 
+** omitting `replacements` will resolve with an object describing bookmarks currently in the document*
+
 #### `docxmarks(*docxData, *replacements)`
 
 - **docxData** *[base64 | Buffer | ArrayBuffer | Uint8Array - required]*
-- **replacements** *[object - required]*
+- **replacements** *[object - optional]*
   - **key** - Name of bookmark to replace, is case sensitive
   - **value** *[string | function | object]* - Bookmark replacement value
     - **string** - Replace bookmark with string's value

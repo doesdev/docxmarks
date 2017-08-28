@@ -121,3 +121,8 @@ test(`handles nested bookmarks`, async (assert) => {
   await docxmarks(newDx, {inner: setOld, outer: 'replace outer and inner'})
   assert.is(oldInner, newInner)
 })
+
+test(`gets list of bookmarks with no replacements`, async (assert) => {
+  let bookmarks = await docxmarks(docxDefault)
+  assert.is(bookmarks.FIRST, 'John')
+})
