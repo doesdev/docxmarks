@@ -5,6 +5,7 @@ import docxmarks from './index'
 const b64 = require('./docx.json')
 const docxDefault = Buffer.from(b64.default, 'base64')
 const docxNested = Buffer.from(b64.nested, 'base64')
+const docxIllegal = Buffer.from(b64.illegal, 'base64')
 
 test(`test a bunch of bookmarks`, async (assert) => {
   let old = {
@@ -125,4 +126,26 @@ test(`handles nested bookmarks`, async (assert) => {
 test(`gets list of bookmarks with no replacements`, async (assert) => {
   let bookmarks = await docxmarks(docxDefault)
   assert.is(bookmarks.FIRST, 'John')
+})
+
+test(`handles illegal XML characters`, async (assert) => {
+  let expected = {
+    _GoBack: '',
+    amp: ' & ',
+    gt: ' > ',
+    lt: ' < ',
+    pos: ' ‘ ',
+    quot: ' “ '
+  }
+  assert.deepEqual(await docxmarks(docxIllegal), expected)
+  let replacers = {
+    _GoBack: '',
+    amp: 'amp',
+    gt: 'gt',
+    lt: 'lt',
+    pos: 'pos',
+    quot: 'quot'
+  }
+  let updated = await docxmarks(docxIllegal, replacers)
+  assert.deepEqual(await docxmarks(updated), replacers)
 })
