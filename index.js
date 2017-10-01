@@ -4,6 +4,28 @@
 const jszip = require('jszip')
 const matcher = /<w:bookmarkStart.+?(?:(?:(?:w:id="(.+?)").+?(?:w:name="(.+?)"))|(?:(?:w:name="(.+?)").+?(?:w:id="(.+?)"))).+?<w:bookmarkEnd.+?(?:w:id="(\1|\4)").+?>/g
 const defTags = '<w:r><w:t></w:t></w:r>'
+const primitive = (v) => {
+  return ['string', 'number', 'boolean', 'undefined'].includes(typeof v)
+}
+const coal = (v, alt) => (v === 0 || v === false) ? v : (v || alt)
+const charConv = {
+  '<': `&lt;`,
+  '>': `&gt;`,
+  '"': `&quot;`,
+  '\'': `&apos;`,
+  '&': `&amp;`
+}
+const convChar = {
+  '&lt;': '<',
+  '&gt;': '>',
+  '&quot;': '"',
+  '&apos;': `'`,
+  '&amp;': '&'
+}
+const xmlCleanRgx = /(?!&lt;|&gt;|&quot;|&apos;|&amp;)[<>"'&]/g
+const xmlClean = (v) => v.replace(xmlCleanRgx, (m) => charConv[m])
+const xmlDirtyRgx = /&lt;|&gt;|&quot;|&apos;|&amp;/g
+const xmlDirty = (v) => v.replace(xmlDirtyRgx, (m) => convChar[m])
 
 // helpers
 const getType = (o) => {
@@ -30,7 +52,7 @@ const getReplacer = (marks, found, ids) => {
     raw = raw || '<w:t></w:t>'
     val = !val ? '' : val.replace(/<.+?>/g, '')
     if (marks._dxmGetter) {
-      marks._dxmGetter(name, val)
+      marks._dxmGetter(name, xmlDirty(val))
       return match
     }
     val = marks[name].setter(val)
@@ -46,14 +68,14 @@ module.exports = (docx, marks) => {
   let append
   let bookmarks = {}
   if (!marks) marks = {_dxmGetter: (k, v) => { bookmarks[k] = v }}
+  marks = Object.assign({}, marks)
   Object.entries(marks).forEach(([k, v]) => {
     if (k === '_dxmGetter') return
-    if (typeof v === 'string') marks[k] = {setter: () => v}
+    if (primitive(v)) marks[k] = {setter: () => xmlClean(`${coal(v, '')}`)}
     else if (typeof v === 'function') marks[k] = {setter: v}
     else if (v.hasOwnProperty('setter') && typeof v.setter === 'string') {
-      let oldVal = v.setter
-      marks[k].setter = () => oldVal
-    }
+      marks[k] = Object.assign({}, v, {setter: () => v.setter})
+    } else delete marks[k]
     append = append || marks[k].append
   })
   let type = getType(docx)
