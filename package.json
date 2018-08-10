@@ -1,9 +1,12 @@
 {
   "name": "docxmarks",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "engines": {
     "node": ">=6.0.0"
   },
+  "files": [
+    "index.js"
+  ],
   "description": "Super simple bookmark replacement / mail merge for docx files",
   "keywords": [
     "docx",
@@ -18,9 +21,6 @@
     "libre writer",
     "open office"
   ],
-  "files": [
-    "index.js"
-  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/musocrat/docxmarks"
@@ -33,13 +33,15 @@
   },
   "main": "index.js",
   "scripts": {
-    "test": "ava --verbose"
+    "test": "ava --verbose",
+    "changelog": "auto-changelog -u -l 50 && git add CHANGELOG.md"
   },
   "license": "MIT",
   "dependencies": {
-    "jszip": "^3.1.4"
+    "jszip": "^3.1.5"
   },
   "devDependencies": {
-    "ava": "^0.22.0"
+    "auto-changelog": "^1.8.0",
+    "ava": "^0.25.0"
   }
 }
