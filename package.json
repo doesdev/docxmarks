@@ -1,6 +1,6 @@
 {
   "name": "docxmarks",
-  "version": "2.2.3",
+  "version": "2.2.4",
   "engines": {
     "node": ">=6.0.0"
   },
@@ -25,7 +25,7 @@
     "type": "git",
     "url": "https://github.com/musocrat/docxmarks"
   },
-  "homepage": "https://github.com/musocrat/docxmarks",
+  "homepage": "http://docxmarks.doesdev.com",
   "author": "Andrew Carpenter",
   "bugs": {
     "email": "andrew@musocrat.com",
@@ -33,15 +33,13 @@
   },
   "main": "index.js",
   "scripts": {
-    "test": "ava --verbose",
-    "changelog": "auto-changelog -u -l 50 && git add CHANGELOG.md"
+    "test": "node test.js --verbose"
   },
   "license": "MIT",
   "dependencies": {
-    "jszip": "^3.2.1"
+    "jszip": "^3.2.2"
   },
   "devDependencies": {
-    "auto-changelog": "^1.13.0",
-    "ava": "^2.0.0"
+    "mvt": "^4.0.0-beta.3"
   }
 }
