@@ -1,5 +1,5 @@
 {
-  "name": "docxmarks",
+  "name": "@sqnibc/docxmarks",
   "version": "2.2.4",
   "engines": {
     "node": ">=6.0.0"
