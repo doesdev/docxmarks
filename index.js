@@ -50,16 +50,22 @@ const getReplacer = (marks, found, ids) => {
     let wrap = (match.match(/(<w:r[> ].+<\/w:r>)/) || [])[0] || defTags
     let [raw, val] = (wrap.match(/<w:t(?:>|\s.+?>)([^(?:<\/w:t>)]*)<\/w:t>/) || []) || []
     raw = raw || '<w:t></w:t>'
+    
     val = !val ? '' : val.replace(/<.+?>/g, '')
     if (marks._dxmGetter) {
       marks._dxmGetter(name, xmlDirty(val))
       return match
     }
-    val = marks[name].setter(val)
+
     let start = `<w:bookmarkStart w:id="${id}" w:name="${name}"/>`
-    let content = `<w:t xml:space="preserve">${val}</w:t>`
     let end = `<w:bookmarkEnd w:id="${id}"/>`
-    return `${start}${wrap.replace(raw, content)}${end}`
+    let content = wrap.replace(raw, `<w:t xml:space="preserve">${val}</w:t>`) 
+    if(val && val !== ''){
+      let newVal = marks[name].setter(val)
+      let newRaw = raw.replace(val, newVal)
+      content = wrap.replace(raw, newRaw)
+    } 
+    return `${start}${content}${end}`
   }
 }
 
