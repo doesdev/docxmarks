@@ -48,7 +48,7 @@ const getReplacer = (marks, found, ids) => {
     ids.push(id)
     if (!marks._dxmGetter && !marks[name]) return match
     let wrap = (match.match(/(<w:r[> ].+<\/w:r>)/) || [])[0] || defTags
-    let [raw, val] = (wrap.match(/<w:t(?:>|\s.+?>)(.*)<\/w:t>/) || []) || []
+    let [raw, val] = (wrap.match(/<w:t(?:>|\s.+?>)([^(?:<\/w:t>)]*)<\/w:t>/) || []) || []
     raw = raw || '<w:t></w:t>'
     val = !val ? '' : val.replace(/<.+?>/g, '')
     if (marks._dxmGetter) {
