@@ -47,25 +47,8 @@ const getReplacer = (marks, found, ids) => {
     found[name] = true
     ids.push(id)
     if (!marks._dxmGetter && !marks[name]) return match
-    let wrap = (match.match(/(<w:r[> ].+<\/w:r>)/) || [])[0] || defTags
-    let [raw, val] = (wrap.match(/<w:t(?:>|\s.+?>)([^(?:<\/w:t>)]*)<\/w:t>/) || []) || []
-    raw = raw || '<w:t></w:t>'
-    
-    val = !val ? '' : val.replace(/<.+?>/g, '')
-    if (marks._dxmGetter) {
-      marks._dxmGetter(name, xmlDirty(val))
-      return match
-    }
-
-    let start = `<w:bookmarkStart w:id="${id}" w:name="${name}"/>`
-    let end = `<w:bookmarkEnd w:id="${id}"/>`
-    let content = wrap.replace(raw, `<w:t xml:space="preserve">${val}</w:t>`) 
-    if(val && val !== ''){
-      let newVal = marks[name].setter(val)
-      let newRaw = raw.replace(val, newVal)
-      content = wrap.replace(raw, newRaw)
-    } 
-    return `${start}${content}${end}`
+    let realValue = match.replace(/(.*<w:t(?:>|\s.+?>))(.*?)(<\/w:t>.*)/, `$1${marks[name].setter()}$3`)
+    return realValue;
   }
 }
 
@@ -73,14 +56,14 @@ const getReplacer = (marks, found, ids) => {
 module.exports = (docx, marks) => {
   let append
   let bookmarks = {}
-  if (!marks) marks = {_dxmGetter: (k, v) => { bookmarks[k] = v }}
+  if (!marks) marks = { _dxmGetter: (k, v) => { bookmarks[k] = v } }
   marks = Object.assign({}, marks)
   Object.entries(marks).forEach(([k, v]) => {
     if (k === '_dxmGetter') return
-    if (primitive(v)) marks[k] = {setter: () => xmlClean(`${coal(v, '')}`)}
-    else if (typeof v === 'function') marks[k] = {setter: v}
+    if (primitive(v)) marks[k] = { setter: () => xmlClean(`${coal(v, '')}`) }
+    else if (typeof v === 'function') marks[k] = { setter: v }
     else if (v.hasOwnProperty('setter') && typeof v.setter === 'string') {
-      marks[k] = Object.assign({}, v, {setter: () => v.setter})
+      marks[k] = Object.assign({}, v, { setter: () => v.setter })
     } else delete marks[k]
     append = append || marks[k].append
   })
@@ -88,7 +71,7 @@ module.exports = (docx, marks) => {
   let found = {}
   let ids = []
   let replacer = getReplacer(marks, found, ids)
-  return jszip.loadAsync(docx, {base64: type === 'base64'}).then((zip) => {
+  return jszip.loadAsync(docx, { base64: type === 'base64' }).then((zip) => {
     let files = Object.keys(zip.files).filter((k) => k.match(/^word\/.+\.xml$/))
     let replace = (f) => {
       return zip.file(f).async('string').then((text) => {
@@ -106,7 +89,7 @@ module.exports = (docx, marks) => {
     }
     let finish = () => {
       if (marks._dxmGetter) return Promise.resolve(bookmarks)
-      if (!append) return zip.generateAsync({type})
+      if (!append) return zip.generateAsync({ type })
       let doc = 'word/document.xml'
       return zip.file(doc).async('string').then((text) => {
         ids = ids.map((i) => parseInt(i, 10)).sort((a, b) => b - a)
@@ -121,7 +104,7 @@ module.exports = (docx, marks) => {
           text = text.replace(/<\/w:body>/, `${start}${content}${end}`)
         })
         zip.file(doc, text)
-        return zip.generateAsync({type})
+        return zip.generateAsync({ type })
       })
     }
     return Promise.all(files.map(replace)).then(finish)
