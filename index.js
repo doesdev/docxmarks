@@ -52,7 +52,6 @@ const getReplacer = (marks, found, ids) => {
   }
 }
 
-// main
 module.exports = (docx, marks) => {
   let append
   let bookmarks = {}
