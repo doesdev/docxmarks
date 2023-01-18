@@ -1,0 +1,63 @@
+on:
+  pull_request:
+    branches:
+      - main
+    types: [closed]
+  
+jobs:
+  create-version:
+    if: github.event.pull_request.merged == true && github.head_ref != 'ci'
+    runs-on: ubuntu-latest
+    name: Bump Version and Publish to GKE
+    steps:  
+      - uses: actions/checkout@v2
+      - name: Get composite run steps repository
+        uses: actions/checkout@v2
+        with:
+          repository: sqnibc/com.ibc.gh.actions.publish-npm-package
+          # Personal access token to check out private repository
+          token: ${{ secrets.YKMG_PAT }}
+          # Indicate where to check action out to
+          path: .github/version-action 
+      - id: run-version
+        if: github.head_ref != 'changeme'
+        uses: ./.github/version-action
+        with:
+          gh-pat-token: ${{ secrets.YKMG_PAT }}
+          npm-token: ${{ secrets.NPM_TOKEN }}
+          npm-publish-token: ${{ secrets.NPM_PUBLISH_TOKEN }}
+          service-account-mail: ${{ secrets.TF_GKE_K8SMVP_SA_MAIL }}
+          service-account-key: ${{ secrets.TF_GKE_K8SMVP_SA }}
+          project-id: ${{ secrets.TF_GKE_K8SMVP_PROJECT_ID }}
+          cluster-name: ${{ secrets.TF_GKE_K8SMVP_CLUSTERNAME }}
+          gke-zone: ${{ secrets.TF_GKE_K8SMVP_ZONE }}
+      - name: Repository Dispatch Deployment (Shared Utils)
+        uses: peter-evans/repository-dispatch@v1
+        with:
+          token: ${{ secrets.YKMG_PAT }}
+          repository: sqnibc/k8s-dl-shared-utils
+          event-type: constants-package-updated
+          client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}"}'
+      - name: Repository Dispatch Deployment (Backend App)
+        uses: peter-evans/repository-dispatch@v1
+        with:
+          token: ${{ secrets.YKMG_PAT }}
+          repository: sqnibc/com.ibc.dl.k8s.app.backend
+          event-type: constants-package-updated
+          client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}"}'
+      - name: Repository Dispatch Deployment (Backend App)
+        uses: peter-evans/repository-dispatch@v1
+        with:
+          token: ${{ secrets.YKMG_PAT }}
+          repository: sqnibc/com.ibc.dl.k8s.auth0
+          event-type: constants-package-updated
+          client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}"}'
+      - name: Repository Dispatch Deployment (Router)
+        uses: peter-evans/repository-dispatch@v1
+        with:
+          token: ${{ secrets.YKMG_PAT }}
+          repository: sqnibc/com.ibc.dl.k8s.router
+          event-type: constants-package-updated
+          client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}"}'
+
+

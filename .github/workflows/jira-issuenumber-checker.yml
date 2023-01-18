@@ -1,0 +1,22 @@
+name: Pull Request Lint
+
+on:
+  pull_request:
+    types: ['opened', 'edited', 'reopened', 'synchronize']
+
+jobs:
+  title:
+    name: ticket check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check for ticket
+        uses: neofinancial/ticket-check-action@v1
+        with:
+          token: ${{ secrets.YKMG_PAT }}
+          ticketLink: 'https://itbycloud.atlassian.net/browse/YOYKD-%ticketNumber%'
+          ticketPrefix: 'YOYKD-'
+          titleRegex: '^YOYKD-(?<ticketNumber>\d+)'
+          branchRegex: '^YOYKD-(?<ticketNumber>\d+)'
+          bodyRegex: 'YOYKD-(?<ticketNumber>\d+)'
+          bodyURLRegex: 'http(s?):\/\/(itbycloud.atlassian.net)(\/browse)\/(YOYKD\-)(?<ticketNumber>\d+)'
