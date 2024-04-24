@@ -37,9 +37,9 @@
   },
   "license": "MIT",
   "dependencies": {
-    "jszip": "^3.2.2"
+    "jszip": "^3.10.1"
   },
   "devDependencies": {
-    "mvt": "^4.0.0-beta.3"
+    "mvt": "^4.2.1"
   }
 }
