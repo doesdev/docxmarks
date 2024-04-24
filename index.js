@@ -26,6 +26,7 @@ const xmlCleanRgx = /(?!&lt;|&gt;|&quot;|&apos;|&amp;)[<>"'&]/g
 const xmlClean = (v) => v.replace(xmlCleanRgx, (m) => charConv[m])
 const xmlDirtyRgx = /&lt;|&gt;|&quot;|&apos;|&amp;/g
 const xmlDirty = (v) => v.replace(xmlDirtyRgx, (m) => convChar[m])
+const DEFAULT_FONT_SIZE = 11; // default font size
 
 // helpers
 const getType = (o) => {
@@ -40,7 +41,7 @@ const getType = (o) => {
   return 'blob'
 }
 
-const getReplacer = (marks, found, ids) => {
+const getReplacer = (marks, found, ids, fontSize = DEFAULT_FONT_SIZE) => {
   return (match, id, name, name2, id2) => {
     id = id || id2
     name = name || name2
@@ -57,14 +58,15 @@ const getReplacer = (marks, found, ids) => {
     }
     val = marks[name].setter(val)
     let start = `<w:bookmarkStart w:id="${id}" w:name="${name}"/>`
-    let content = `<w:t xml:space="preserve">${val}</w:t>`
+    //* to get the size of 11 in MS word, need to double the size
+    let content = `<w:r><w:rPr><w:sz w:val="${fontSize * 2}"/></w:rPr><w:t xml:space="preserve">${val}</w:t></w:r>`;
     let end = `<w:bookmarkEnd w:id="${id}"/>`
     return `${start}${wrap.replace(raw, content)}${end}`
   }
 }
 
 // main
-module.exports = (docx, marks) => {
+module.exports = (docx, marks, fontSize = DEFAULT_FONT_SIZE) => {
   let append
   let bookmarks = {}
   if (!marks) marks = {_dxmGetter: (k, v) => { bookmarks[k] = v }}
@@ -81,7 +83,7 @@ module.exports = (docx, marks) => {
   let type = getType(docx)
   let found = {}
   let ids = []
-  let replacer = getReplacer(marks, found, ids)
+  let replacer = getReplacer(marks, found, ids, fontSize)
   return jszip.loadAsync(docx, {base64: type === 'base64'}).then((zip) => {
     let files = Object.keys(zip.files).filter((k) => k.match(/^word\/.+\.xml$/))
     let replace = (f) => {
