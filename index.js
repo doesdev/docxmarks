@@ -26,7 +26,6 @@ const xmlCleanRgx = /(?!&lt;|&gt;|&quot;|&apos;|&amp;)[<>"'&]/g
 const xmlClean = (v) => v.replace(xmlCleanRgx, (m) => charConv[m])
 const xmlDirtyRgx = /&lt;|&gt;|&quot;|&apos;|&amp;/g
 const xmlDirty = (v) => v.replace(xmlDirtyRgx, (m) => convChar[m])
-const DEFAULT_FONT_SIZE = 11; // default font size
 
 // helpers
 const getType = (o) => {
@@ -41,7 +40,7 @@ const getType = (o) => {
   return 'blob'
 }
 
-const getReplacer = (marks, found, ids, fontSize = DEFAULT_FONT_SIZE) => {
+const getReplacer = (marks, found, ids, fontSize) => {
   return (match, id, name, name2, id2) => {
     id = id || id2
     name = name || name2
@@ -58,15 +57,15 @@ const getReplacer = (marks, found, ids, fontSize = DEFAULT_FONT_SIZE) => {
     }
     val = marks[name].setter(val)
     let start = `<w:bookmarkStart w:id="${id}" w:name="${name}"/>`
-    //* to get the size of 11 in MS word, need to double the size
-    let content = `<w:r><w:rPr><w:sz w:val="${fontSize * 2}"/></w:rPr><w:t xml:space="preserve">${val}</w:t></w:r>`;
+    let content = `<w:t xml:space="preserve">${val}</w:t>`
+    let withSize = `<w:r><w:rPr><w:sz w:val="${(fontSize || 0) * 2}"/></w:rPr>${content}</w:r>`
     let end = `<w:bookmarkEnd w:id="${id}"/>`
-    return `${start}${wrap.replace(raw, content)}${end}`
+    return `${start}${wrap.replace(raw, fontSize ? withSize : content)}${end}`
   }
 }
 
 // main
-module.exports = (docx, marks, fontSize = DEFAULT_FONT_SIZE) => {
+module.exports = (docx, marks, fontSize) => {
   let append
   let bookmarks = {}
   if (!marks) marks = {_dxmGetter: (k, v) => { bookmarks[k] = v }}
