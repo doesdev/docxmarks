@@ -6,7 +6,8 @@ Formatting will follow the initial style inside the bookmark. That is to say,
 if you have content inside the bookmark the first character defines the styling.
 This is the same behavior supplied in Microsoft Word's libraries.
 
-This library will also only handle text, nothing else.
+This library exclusively manages text and includes optional functionality for adjusting the font size of bookmarks.
+
 
 I say all of that to say if you need more advanced formatting and content
 options then you should be using
@@ -27,7 +28,11 @@ const replacements = {
   last: (val) => val || 'Carpenter',
   maybeNoBookmark: {append: true, setter: 'There is one now'}
 }
-docxmarks(docx, replacements).then((data) => {
+
+// 11 is the font size for bookamrks which is opitional
+const font = 11;
+
+docxmarks(docx, replacements, font).then((data) => {
   fs.writeFileSync('path/to/newDocument.docx', data)
 })
 ```
